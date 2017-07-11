@@ -1,0 +1,34 @@
+This is pmwikiserv -- a lightweight HTTP-server for standalone installations
+of PmWiki.  It allows PmWiki to be run without a webserver; or, more
+precisely, it provides a barebones "server" that can run PmWiki
+in absence of another server.  In fact, it only understands four
+url paths:
+    /wiki    - retrieve a PmWiki page
+    /pub     - retrieve a file from the PmWiki pub/ directory
+    /uploads - retrieve a file from the PmWiki uploads/ directory
+    /phpinfo - return information about the PHP environment
+Any other request results in a "404 Not Found" error.
+
+Installing standalone under Microsoft Windows
+---------------------------------------------
+1.  If you don't have one already, install a version of PmWiki
+2.  Copy the "server/" directory containing these files into
+    the PmWiki main directory.
+3.  Execute the "pmwikiserv.bat" file in the server directory.
+4.  Open a browser to "http://localhost/wiki" to start using the
+    wiki.
+
+Installing standalone under Unix-based systems
+----------------------------------------------
+By default this server wants to listen on port 80, but opening
+ports below 1024 on Unix systems requires superuser (root) privileges.
+Since we really don't recommend running this server as root, 
+you'll want to customize the $Listen variable in pmwikiserv.php
+to a port number above 1024.  8000 is a common choice.
+
+Once you have done that, the server can be started by entering
+the command "php pmwikiserv.php".  Then you can open a browser
+to "http://your.server.address:port/wiki" to start accessing
+PmWiki.
+
+

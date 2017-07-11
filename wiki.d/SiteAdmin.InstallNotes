@@ -1,0 +1,16 @@
+version=pmwiki-2.2.98 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36
+author=Damien Palmer
+charset=UTF-8
+csum=Link from SiteAdmin
+ctime=1499554208
+host=192.168.1.154
+name=SiteAdmin.InstallNotes
+rev=1
+targets=
+text=(:redirect Radagast.PmWikiInstallationNotes:)
+time=1499554208
+author:1499554208=Damien Palmer
+csum:1499554208=Link from SiteAdmin
+diff:1499554208:1499554208:=1d0%0a%3c (:redirect Radagast.PmWikiInstallationNotes:)%0a\ No newline at end of file%0a
+host:1499554208=192.168.1.154

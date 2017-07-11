@@ -1,0 +1,23 @@
+version=pmwiki-2.2.98 ordered=1 urlencoded=1
+agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36
+author=damien
+charset=UTF-8
+csum=
+host=::1
+name=Main.WikiSandbox
+rev=7
+targets=PmWiki.TextFormattingRules
+text=Feel free to use this page to experiment with the [[PmWiki/Text Formatting Rules]].  Just click the "Edit Page" link at the bottom of the page.%0a----%0a* List%0a** Sublist%0a**not bold** **or maybe bold** //not a list though// %0a** more sublist%0a** new bullets?%0a*** I wonder why.%0a* How about now?%0a** And then,%0a** NO and then!%0a*** Because they just alternate.%0a== Header==?%0a!! Header!!%0a!!! header!!!%0a# Numbered%0a# List%0a## different?%0a### or maybe the same.
+time=1499782210
+author:1499782210=damien
+diff:1499782210:1499782130:=5c5%0a%3c **not bold** **or maybe bold** //not a list though// %0a---%0a> **not bold** **or maybe bold** //not a list though//%0a15,19c15%0a%3c !!! header!!!%0a%3c # Numbered%0a%3c # List%0a%3c ## different?%0a%3c ### or maybe the same.%0a\ No newline at end of file%0a---%0a> !!! header!!!%0a\ No newline at end of file%0a
+host:1499782210=::1
+author:1499782130=damien
+diff:1499782130:1499782084:=12d11%0a%3c *** Because they just alternate.%0a
+host:1499782130=::1
+author:1499782084=damien
+diff:1499782084:1499781307:=7,11d6%0a%3c ** new bullets?%0a%3c *** I wonder why.%0a%3c * How about now?%0a%3c ** And then,%0a%3c ** NO and then!%0a
+host:1499782084=::1
+author:1499781307=damien
+diff:1499781307:1093548433:=3,9d2%0a%3c * List%0a%3c ** Sublist%0a%3c **not bold** **or maybe bold** //not a list though//%0a%3c ** more sublist%0a%3c == Header==?%0a%3c !! Header!!%0a%3c !!! header!!!%0a\ No newline at end of file%0a
+host:1499781307=::1
