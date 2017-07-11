@@ -27,6 +27,11 @@ include("$FarmD/cookbook/userauth2.php");
 ##  details about this setting and other ways to create nicer-looking urls.
 $EnablePathInfo = 1;
 
+## $HTMLHeaderFmt style of including favicon in wiki pages
+$HTMLHeaderFmt['logo'] =
+  '<link href="/wiki/favicon.png" type="image/png" rel="icon" />
+  <link href="/wiki/favicon.ico" type="image/x-icon" rel="shortcut icon" />';
+
 ## $PageLogoUrl is the URL for a logo image -- you can change this
 ## to your own logo if you wish.
 # $PageLogoUrl = "$PubDirUrl/skins/pmwiki/pmwiki-32.gif";
