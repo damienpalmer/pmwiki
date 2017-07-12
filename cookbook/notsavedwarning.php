@@ -11,7 +11,7 @@
 
   Copyright 2009-2015 Petko Yotov www.pmwiki.org/petko
 */
-$RecipeInfo['NotSavedWarning']['Version'] = '20150828';
+$RecipeInfo['NotSavedWarning']['Version'] = '20170712';
 
 SDV($NsWarning, '$[Content was modified, but not saved!]');
 SDVA($HTMLFooterFmt, array('Notsaved' => '<script type="text/javascript"><!--
@@ -23,18 +23,27 @@ SDVA($HTMLFooterFmt, array('Notsaved' => '<script type="text/javascript"><!--
   }
 
   function NsSubmit(evt) {
+    if (typeof evt == "undefined") evt = window.event;
     if(NsForm.text && NsForm.nsscroll)
       NsForm.nsscroll.value = NsForm.text.scrollTop;
 
     if(NsPromptAuthor && typeof(NsForm.author)!="undefined" && NsForm.author.value=="") {
       var r = uPrompt(NsPromptAuthor, "");
-      if(typeof(r)=="string")NsForm.author.value=r;
-      else {NsForm.author.focus(); evt.preventDefault(); return false;}
+      if(typeof(r)=="string") NsForm.author.value = r;
+      else {
+        evt.preventDefault(); 
+        NsForm.author.focus(); 
+        return false;
+      }
     }
     if(NsPromptSum && typeof(NsForm.csum)!="undefined" && NsForm.csum.value=="") {
       var r = uPrompt(NsPromptSum, "");
-      if(typeof(r)=="string")NsForm.csum.value=r;
-      else {NsForm.csum.focus(); evt.preventDefault(); return false;}
+      if(typeof(r)=="string") NsForm.csum.value = r;
+      else {
+        evt.preventDefault();
+        NsForm.csum.focus(); 
+        return false;
+      }
     }
     NsMessage="";
     return true;
