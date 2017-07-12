@@ -66,6 +66,10 @@ if($action=='edit'){
   include_once("$FarmD/cookbook/notsavedwarning.php");
 }
 
+## Diffs are more useful if the wiki text ends with a newline character so
+## the last line won't show as changed when text is appended to the page
+$ROSPatterns["/\n*$/"] = "\n"; // On submit, ensure trailing newline
+
 ##  PmWiki comes with graphical user interface buttons for editing;
 ##  to enable these buttons, set $EnableGUIButtons to 1.  
 $EnableGUIButtons = 1;
