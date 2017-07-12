@@ -59,6 +59,13 @@ include_once("scripts/xlpage-utf-8.php");
 # $EnableBlocklist = 1;                    # enable manual blocklists
 # $EnableBlocklist = 10;                   # enable automatic blocklists
 
+## NotSavedWarning seems like really good default behavior
+if($action=='edit'){
+  $NsPromptSum    = XL("Please enter a summary"); # Optional
+  $NsPromptAuthor = XL("Please enter your name"); # Optional
+  include_once("$FarmD/cookbook/notsavedwarning.php");
+}
+
 ##  PmWiki comes with graphical user interface buttons for editing;
 ##  to enable these buttons, set $EnableGUIButtons to 1.  
 $EnableGUIButtons = 1;
