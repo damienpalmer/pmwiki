@@ -22,19 +22,19 @@ SDVA($HTMLFooterFmt, array('Notsaved' => '<script type="text/javascript"><!--
       : el.attachEvent("on" + ev, fn);
   }
 
-  function NsSubmit() {
+  function NsSubmit(evt) {
     if(NsForm.text && NsForm.nsscroll)
       NsForm.nsscroll.value = NsForm.text.scrollTop;
 
     if(NsPromptAuthor && typeof(NsForm.author)!="undefined" && NsForm.author.value=="") {
       var r = uPrompt(NsPromptAuthor, "");
       if(typeof(r)=="string")NsForm.author.value=r;
-      else {NsForm.author.focus(); return false;}
+      else {NsForm.author.focus(); evt.preventDefault(); return false;}
     }
     if(NsPromptSum && typeof(NsForm.csum)!="undefined" && NsForm.csum.value=="") {
       var r = uPrompt(NsPromptSum, "");
       if(typeof(r)=="string")NsForm.csum.value=r;
-      else {NsForm.csum.focus(); return false;}
+      else {NsForm.csum.focus(); evt.preventDefault(); return false;}
     }
     NsMessage="";
     return true;
