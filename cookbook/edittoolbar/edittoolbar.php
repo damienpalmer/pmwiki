@@ -35,8 +35,8 @@ SDVA($GUIButtons, array(
 	'$GUIButtonDirUrlFmt/table_add.png"$[Table]"'),
 
 'separator3'=> array(170, '', '', '', '$GUIButtonDirUrlFmt/separator.png'),
-'center'		=> array(180, '%25center%25', '', '', '$GUIButtonDirUrlFmt/text_align_center.png"$[Center]"'),
-'right'		=> array(190, '%25right%25', '', '', '$GUIButtonDirUrlFmt/text_align_right.png"$[Right justified]"'),
+'center'		=> array(180, '%center%', '', '', '$GUIButtonDirUrlFmt/text_align_center.png"$[Center]"'),
+'right'		=> array(190, '%right%', '', '', '$GUIButtonDirUrlFmt/text_align_right.png"$[Right justified]"'),
 'indent'		=> array(200, '\\n->', '\\n', '$[Indented text]', '$GUIButtonDirUrlFmt/text_indent.png"$[Indented text]"'),
 'outdent'	=> array(210, '\\n-<', '\\n', '$[Hanging indent]', '$GUIButtonDirUrlFmt/text_indent_remove.png"$[Hanging indent]"'),
 

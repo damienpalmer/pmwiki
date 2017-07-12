@@ -63,11 +63,16 @@ include_once("scripts/xlpage-utf-8.php");
 ##  to enable these buttons, set $EnableGUIButtons to 1.  
 $EnableGUIButtons = 1;
 
+## Use the edittoolbar cookbook
+include_once("$FarmD/cookbook/edittoolbar/edittoolbar.php");
+
 ##  To enable markup syntax from the Creole common wiki markup language
 ##  (http://www.wikicreole.org/), include it here:
 include_once("scripts/creole.php");
 
-
+# override 'strong' and 'em' GUI Buttons to use Creole markup ** and //
+$GUIButtons['strong']	= array(50, "**", "**", '$[Bold]','$GUIButtonDirUrlFmt/text_bold.png"$[Bold]"','$[ak_strong]');
+$GUIButtons['em']		  = array(60, "//", "//", '$[Italic]','$GUIButtonDirUrlFmt/text_italic.png"$[Italic]"','$[ak_em]');
 
 ##  Some sites may want leading spaces on markup lines to indicate
 ##  "preformatted text blocks", set $EnableWSPre=1 if you want to do
