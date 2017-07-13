@@ -17,6 +17,8 @@ $PubDirUrl = '/wiki/pub';
 $HomePage  = "Main.HomePage";       // should use dots (instead of slashes) even when using
 $LoginPage = "Site.Login";          // CleanUrls ($EnablePathInfo=1)
 $HandleAuth['diff'] = 'history';
+## Prevent UserAuth2 from changing the default session_save_path
+$UA2SessionSavePathDir = session_save_path();
 include("$FarmD/cookbook/userauth2.php");
 
 ##  If you want to use URLs of the form .../pmwiki.php/Group/PageName
