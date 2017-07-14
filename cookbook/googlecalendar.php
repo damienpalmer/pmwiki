@@ -15,10 +15,10 @@
 $RecipeInfo['GoogleCalendar']['Version'] = '2016-02-09';
 
 
-Markup('GoogleCalendar', 'directives',  '/\\(:GoogleCalendar (.*?):\\)/e', 'DspGCal("$1")');
+Markup('GoogleCalendar', 'directives',  '/\\(:GoogleCalendar (.*?):\\)/', 'DspGCal');
 
 function DspGCal($opts) {
-  $args = ParseArgs($opts);
+  $args = ParseArgs($opts[1]);
 
   if (!$args['calendar']) { $output = "Undefined Google Calendar"; }
     else { // valid calendar
