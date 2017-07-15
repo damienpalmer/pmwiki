@@ -39,6 +39,9 @@ $HTMLHeaderFmt['logo'] =
 # $PageLogoUrl = "$PubDirUrl/skins/pmwiki/pmwiki-32.gif";
 $PageLogoUrl = "$PubDirUrl/skins/pmwiki/RadagastCat.png";
 
+# Google Calendar support
+include_once("$FarmD/cookbook/googlecalendar.php");
+
 ## If you want to have a custom skin, then set $Skin to the name
 ## of the directory (in pub/skins/) that contains your skin files.
 ## See PmWiki.Skins and Cookbook.Skins.
