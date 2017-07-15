@@ -164,7 +164,7 @@ SDV($CalendarBoxFmt,"<div id='story'><h5>\$CalendarTitle</h5>
 	<input type='hidden' name='action' value='wikilog' />
 	<input type='hidden' name='order' value='\$Chrono' />
         <input type='hidden' name='accesscode' value='\$AccessCode' />
-	<table width='95%'><tr>
+	<table><tr>
 	<td class='prompt'>\$DateText</td>
 	<td><select name='storydate'>\$StoryDate</select></td></tr>
 
