@@ -1,5 +1,5 @@
 <?php if (!defined('PmWiki')) exit();
-/*  Copyright 2004-2016 Patrick R. Michaud (pmichaud@pobox.com)
+/*  Copyright 2004-2018 Patrick R. Michaud (pmichaud@pobox.com)
     This file is part of PmWiki; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published
     by the Free Software Foundation; either version 2 of the License, or
@@ -41,6 +41,24 @@ SDVA($SearchPatterns['normal'], array(
   'group' => '!\.Group(Print)?(Header|Footer|Attributes)$!',
   'self' => str_replace('.', '\\.', "!^$pagename$!")));
 
+# The list=grouphomes search pattern requires to scan 
+# all PageStore directories to get the pagenames.
+# This takes (a tiny amoint of) time, so we only do it when needed.
+function EnablePageListGroupHomes() { 
+  global $SearchPatterns;
+  if(isset($SearchPatterns['grouphomes'])) return;
+  
+  $groups = $homes = array();
+  foreach(ListPages() as $pn) {
+    list($g, $n) = explode(".", $pn);
+    @$groups[$g]++;
+  }
+  foreach($groups as $g => $cnt) {
+    $homes[] = MakePageName("$g.$g", "$g.");
+  }
+  $SearchPatterns['grouphomes'] = array('/^('.implode('|', $homes).')$/');
+}
+
 ## $FPLFormatOpt is a list of options associated with fmt=
 ## values.  'default' is used for any undefined values of fmt=.
 SDVA($FPLFormatOpt, array(
@@ -68,16 +86,34 @@ XLSDV('en', array(
 
 SDV($PageListArgPattern, '((?:\\$:?)?\\w+)[:=]');
 
-Markup_e('pagelist', 'directives',
-  '/\\(:pagelist(\\s+.*?)?:\\)/i',
-  "FmtPageList('\$MatchList', \$pagename, array('o' => \$m[1].' '))");
-Markup_e('searchbox', 'directives',
-  '/\\(:searchbox(\\s.*?)?:\\)/',
-  "SearchBox(\$pagename, ParseArgs(\$m[1], '$PageListArgPattern'))");
-Markup_e('searchresults', 'directives',
-  '/\\(:searchresults(\\s+.*?)?:\\)/i',
-  "FmtPageList(\$GLOBALS['SearchResultsFmt'], \$pagename, 
-       array('req' => 1, 'request'=>1, 'o' => \$m[1]))");
+Markup('pagelist', 'directives',
+  '/\\(:pagelist(\\s+.*?)?:\\)/i', "MarkupPageList");
+Markup('searchbox', 'directives',
+  '/\\(:searchbox(\\s.*?)?:\\)/', "MarkupPageList");
+Markup('searchresults', 'directives',
+  '/\\(:searchresults(\\s+.*?)?:\\)/i', "MarkupPageList");
+
+function MarkupPageList($m) {
+  extract($GLOBALS["MarkupToHTML"]); # get $pagename, $markupid
+  switch ($markupid) {
+    case 'pagelist': 
+      return FmtPageList('$MatchList', $pagename, array('o' => $m[1].' '));
+    case 'searchbox': 
+      return SearchBox($pagename, 
+        ParseArgs($m[1], $GLOBALS['PageListArgPattern']));
+    case 'searchresults': 
+      return FmtPageList($GLOBALS['SearchResultsFmt'], 
+        $pagename, array('req' => 1, 'request'=>1, 'o' => $m[1]));
+  }
+}
+
+# called from PageListIf and FPLExpandItemVars
+class cb_pl_expandvars extends PPRC { 
+  function pl_expandvars($m) {
+    $pn = $this->vars;
+    return PVSE(PageVar($pn, $m[2], $m[1]));
+  }
+}
 
 SDV($SaveAttrPatterns['/\\(:(searchresults|pagelist)(\\s+.*?)?:\\)/i'], ' ');
 
@@ -96,10 +132,14 @@ SDVA($PageListFilters, array(
   'PageListSort' => 900,
 ));
 
-foreach(array('random', 'size', 'time', 'ctime') as $o) 
-  SDV($PageListSortCmp[$o], "@(\$PCache[\$x]['$o']-\$PCache[\$y]['$o'])");
-SDV($PageListSortCmp['title'], 
-  '@strcasecmp($PCache[$x][\'=title\'], $PCache[$y][\'=title\'])');
+function CorePageListSorts($x, $y, $o) {
+  global $PCache;
+  if($o == 'title')
+    return @strcasecmp($PCache[$x]['=title'],$PCache[$y]['=title']);
+  return @($PCache[$x][$o]-$PCache[$y][$o]);
+}
+foreach(array('random', 'size', 'time', 'ctime', 'title') as $o) 
+  SDV($PageListSortCmp[$o], 'CorePageListSorts');
 
 define('PAGELIST_PRE' , 1);
 define('PAGELIST_ITEM', 2);
@@ -283,6 +323,7 @@ function PageListSources(&$list, &$opt, $pn, &$page) {
   global $SearchPatterns;
 
   StopWatch('PageListSources begin');
+  if ($opt['list'] == 'grouphomes') EnablePageListGroupHomes();
   ## add the list= option to our list of pagename filter patterns
   $opt['=pnfilter'] = array_merge((array)@$opt['=pnfilter'], 
                                   (array)@$SearchPatterns[$opt['list']]);
@@ -330,8 +371,9 @@ function PageListIf(&$list, &$opt, $pn, &$page) {
   $Cursor['='] = $pn;
   $varpat = '\\{([=*]|!?[-\\w.\\/\\x80-\\xff]*)(\\$:?\\w+)\\}';
   while (preg_match("/$varpat/", $condspec, $match)) {
-    $condspec = PPRE("/$varpat/",
-                    "PVSE(PageVar('$pn', \$m[2], \$m[1]))", $condspec);
+    $cb = new cb_pl_expandvars($pn);
+    $condspec = preg_replace_callback("/$varpat/", 
+      array($cb, 'pl_expandvars'), $condspec);
   }
   if (!preg_match("/^\\s*(!?)\\s*(\\S*)\\s*(.*?)\\s*$/", $condspec, $match)) 
     return 0;
@@ -340,7 +382,6 @@ function PageListIf(&$list, &$opt, $pn, &$page) {
   $tf = (int)@eval("return ({$Conditions[$condname]});");
   return (boolean)($tf xor $not);
 }
-
 
 function PageListTermsTargets(&$list, &$opt, $pn, &$page) {
   global $FmtV;
@@ -468,21 +509,29 @@ function PageListSort(&$list, &$opt, $pn, &$page) {
   foreach(preg_grep('/^\\$/', array_keys($order)) as $o) 
     foreach($list as $pn) 
       $PCache[$pn][$o] = PageVar($pn, $o);
-  $code = '';
-  foreach($opt['=order'] as $o => $r) {
-    if (@$PageListSortCmp[$o]) 
-      $code .= "\$c = {$PageListSortCmp[$o]}; "; 
-    else 
-      $code .= "\$c = @strcasecmp(\$PCache[\$x]['$o'],\$PCache[\$y]['$o']); ";
-    $code .= "if (\$c) return $r\$c;\n";
-  }
+  foreach($PageListSortCmp as $o=>$f)
+    if(! is_callable($f)) # DEPRECATED
+      $PageListSortCmp[$o] = create_function('$x,$y', "global \$PCache; return {$f};");
+
   StopWatch('PageListSort sort');
-  if ($code) 
-    uasort($list,
-           create_function('$x,$y', "global \$PCache; $code return 0;"));
+  if (count($opt['=order'])) {
+    $PCache['=pagelistoptorder'] = $opt['=order'];
+    uasort($list, 'PageListUASort');
+  }
   StopWatch('PageListSort end');
 }
-
+function PageListUASort($x,$y) {
+  global $PCache, $PageListSortCmp;
+  foreach($PCache['=pagelistoptorder'] as $o => $r) {
+    $sign = ($r == '-') ? -1 : 1;
+    if (@$PageListSortCmp[$o] && is_callable($PageListSortCmp[$o]))
+      $c = $PageListSortCmp[$o]($x, $y, $o);
+    else 
+      $c = @strcasecmp($PCache[$x][$o],$PCache[$y][$o]);
+    if ($c) return $sign*$c;
+  }
+  return 0;
+}
 
 function PageListCache(&$list, &$opt, $pn, &$page) {
   global $PageListCacheDir, $LastModTime, $PageIndexFile;
@@ -727,8 +776,9 @@ function FPLExpandItemVars($item, $matches, $idx, $psvars) {
   $Cursor['='] = $pn = (string)@$matches[$idx];
   $Cursor['>'] = $Cursor['&gt;'] = (string)@$matches[$idx+1];
   $item = str_replace(array_keys($psvars), array_values($psvars), $item);
-  $item = PPRE('/\\{(=|&[lg]t;)(\\$:?\\w[-\\w]*)\\}/',
-              "PVSE(PageVar('$pn',  \$m[2], \$m[1]))", $item);
+  $cb = new cb_pl_expandvars($pn);
+  $item = preg_replace_callback('/\\{(=|&[lg]t;)(\\$:?\\w[-\\w]*)\\}/',
+              array($cb, 'pl_expandvars'), $item);
   if (! IsEnabled($EnableUndefinedTemplateVars, 0))
     $item = preg_replace("/\\{\\$\\$\\w+\\}/", '', $item);
   return $item;
@@ -771,7 +821,7 @@ function PageIndexUpdate($pagelist = NULL, $dir = '') {
   StopWatch("PageIndexUpdate begin ($c pages to update)");
   $pagelist = (array)$pagelist;
   $timeout = time() + $PageIndexTime;
-  $cmpfn = create_function('$a,$b', 'return strlen($b)-strlen($a);');
+  $cmpfn = 'PageIndexUpdateSort';
   Lock(2);
   $ofp = fopen("$PageIndexFile,new", 'w');
   foreach($pagelist as $pn) {
@@ -810,6 +860,7 @@ function PageIndexUpdate($pagelist = NULL, $dir = '') {
   StopWatch("PageIndexUpdate end ($updatecount updated)");
   ignore_user_abort($abort);
 }
+function PageIndexUpdateSort($a,$b) {return strlen($b)-strlen($a);}
 
 ## PageIndexQueueUpdate specifies pages to be updated in
 ## the index upon shutdown (via register_shutdown function).
@@ -819,7 +870,7 @@ function PageIndexQueueUpdate($pagelist) {
     register_shutdown_function('PageIndexUpdate', NULL, getcwd());
   $PageIndexUpdateList = array_merge((array)@$PageIndexUpdateList,
                                      (array)$pagelist);
-  $c1 = count($pagelist); $c2 = count($PageIndexUpdateList);
+  $c1 = @count($pagelist); $c2 = count($PageIndexUpdateList);
   StopWatch("PageIndexQueueUpdate: queued $c1 pages ($c2 total)");
 }
 

@@ -1,6 +1,6 @@
 /***********************************************************************
 **  skin.css
-**  Copyright 2016-2017 Petko Yotov www.pmwiki.org/petko
+**  Copyright 2016-2018 Petko Yotov www.pmwiki.org/petko
 **  
 **  Partially based on pmwiki.css:
 **  Copyright 2004-2006 Patrick R. Michaud pmichaud@pobox.com
@@ -54,7 +54,6 @@ html, body, #bodywrap {
   box-shadow: 2px 2px 8px 0px rgba(0,0,0,0.75);
 }
 
-
 #wikihead {
   border-bottom:1px solid #ccc;
   padding: 0;
@@ -83,7 +82,7 @@ html, body, #bodywrap {
 
 #wikileft { 
   left: 30px;
-  padding:6px;
+  padding: 6px;
   z-index: 4;
 }
 
@@ -94,8 +93,12 @@ html, body, #bodywrap {
   right: 30px;
 }
 
+#wikitext {
+  margin-top: 12px;
+}
+
 #wikifoot {
-  border-top:1px solid #ccc;
+  border-top: 1px solid #ccc;
   padding: 3px;
   font-size: 13.5px;
 }
@@ -240,8 +243,8 @@ select, textarea, input {
 }
 
 /* xlpage-utf-8.php */
-.rtl {direction:rtl; unicode-bidi:bidi-override;}
-.ltr {direction:ltr; unicode-bidi:bidi-override;}
+.rtl, .rtl * {direction:rtl; unicode-bidi:bidi-override;}
+.ltr, .ltr * {direction:ltr; unicode-bidi:bidi-override;}
 .rtl .indent, .rtl.indent, .rtl .outdent, .rtl.outdent {
   margin-left:0; margin-right: 15px;
 }
